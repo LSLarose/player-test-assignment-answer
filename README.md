@@ -1,6 +1,3 @@
-# player-test-assignment-answer
-This repository was created to answer an internship's technical interview assignment.
-
 # rationale
 This program was written in go, as I understood that the internship would use golang and I had never used it before.
 
@@ -20,15 +17,14 @@ How to "use" this tool
 To get developper documentation for this project:
 [godoc -http=:6060]
 
-This wil compile and execute a Go Documentation Server, viewable in a browser at localhost:6060.
+This will compile and execute a Go Documentation Server, viewable in a browser at localhost:6060.
 
 It offers documentation for all modules and packages used in this project
 
-The code from originating from this particular project can be found documented under the section "Third party/exemple.com"
-e.g. http://localhost:6060/pkg/example.com/greetings/
+The code from originating from this particular project can be found documented under the section "Third party/github.com/LSLarose"
+e.g. http://localhost:6060/pkg/github.com/LSLarose/greetings/
 
-To run this project on your own machine:
-[cd ./main]
+To run this project on your own machine, go to the project's root directory:
 [go run .]
 
 This will start a server on your machine accessible at *IP*.
