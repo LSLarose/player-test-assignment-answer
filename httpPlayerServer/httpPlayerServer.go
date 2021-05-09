@@ -20,18 +20,7 @@ func StartServer() {
 	mux := http.NewServeMux()
 
 	// handle `/` route
-	mux.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		message, err := greetings.Hello("Louis Sérey")
-		// If an error was returned, print it to the console and
-		// exit the program.
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// If no error was returned, print the returned message
-		// to the console.
-		fmt.Fprint(res, message)
-	})
+	mux.HandleFunc("/", helloworld)
 
 	// handle `/hello/golang` route
 	mux.HandleFunc("/hello/golang", func(res http.ResponseWriter, req *http.Request) {
@@ -40,4 +29,17 @@ func StartServer() {
 
 	// listen and serve using `ServeMux`
 	http.ListenAndServe(":9000", mux)
+}
+
+func helloworld(res http.ResponseWriter, req *http.Request) {
+	message, err := greetings.Hello("Louis Sérey")
+	// If an error was returned, print it to the console and
+	// exit the program.
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// If no error was returned, print the returned message
+	// to the console.
+	fmt.Fprint(res, message)
 }
