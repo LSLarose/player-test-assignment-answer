@@ -28,7 +28,13 @@ func StartServer() {
 	})
 
 	// listen and serve using `ServeMux`
-	http.ListenAndServe(":9000", mux)
+	err := http.ListenAndServeTLS(":9000", "assets/localhost.crt", "assets/localhost.key", mux)
+
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Default().Print("Server up.")
+	}
 }
 
 func helloworld(res http.ResponseWriter, req *http.Request) {
@@ -36,6 +42,7 @@ func helloworld(res http.ResponseWriter, req *http.Request) {
 	// If an error was returned, print it to the console and
 	// exit the program.
 	if err != nil {
+		http.Error(res, err.Error(), 500)
 		log.Fatal(err)
 	}
 
