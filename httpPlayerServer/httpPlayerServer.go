@@ -9,7 +9,8 @@ import (
 	"github.com/LSLarose/greetings"
 )
 
-func StartServer() {
+// This starts the HTTPS server at
+func StartServer(pathToCSV string) {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing
 	// the time, source file, and line number.
@@ -20,16 +21,19 @@ func StartServer() {
 	mux := http.NewServeMux()
 
 	// handle `/` route
-	mux.HandleFunc("/", helloworld)
+	mux.HandleFunc("/profiles/clientId:*", func(res http.ResponseWriter, req *http.Request) {
+		helloworld(res, req)
+	})
 
 	// handle `/hello/golang` route
-	mux.HandleFunc("/hello/golang", func(res http.ResponseWriter, req *http.Request) {
-		fmt.Fprint(res, "Hello Golang!")
+	mux.HandleFunc("*", func(res http.ResponseWriter, req *http.Request) {
+		http.Error(res, "not found", http.StatusNotAcceptable)
 	})
 
 	// listen and serve using `ServeMux`
 	err := http.ListenAndServeTLS(":9000", "assets/localhost.crt", "assets/localhost.key", mux)
 
+	// print any
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -42,7 +46,7 @@ func helloworld(res http.ResponseWriter, req *http.Request) {
 	// If an error was returned, print it to the console and
 	// exit the program.
 	if err != nil {
-		http.Error(res, err.Error(), 500)
+		http.Error(res, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 	}
 

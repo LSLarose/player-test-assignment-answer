@@ -9,6 +9,7 @@ Upon further investigation, it was found to offer the researched caracteristics 
 This confirmed my choice and I started doing the tutorials, slowly customizing the code to provide the intended functionnalities
 
 Assumptions:
+ - The tool is expected to be an http/s server as it will be pinged every 15 minute by active clients
  - This tool's final environment would be the cloud
 
 How to "use" this tool
