@@ -19,7 +19,7 @@ func main() {
 	consoleLineArguments := os.Args
 
 	//check if enough arguments, if not print help message and exit
-	if len(consoleLineArguments) < 1 {
+	if len(consoleLineArguments) < 2 {
 		log.Fatal("The client update server requires 1 argument" +
 			"\nThe correct way to use this tool is\n" +
 			//first argument is the tool's name
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// only first arg is considered
-	pathToCSVFile := consoleLineArguments[0]
+	pathToCSVFile := consoleLineArguments[1]
 
 	//check if file exists
 	CSVFile, err := os.Open(pathToCSVFile)

@@ -30,8 +30,6 @@ e.g. http://localhost:6060/pkg/github.com/LSLarose/httpPlayerServer/
 if you don't have godoc yet on your machine, you can run:
 `go get -v  golang.org/x/tools/cmd/godoc`
 
-
-
 ## To run this project on your own machine:
 - make sure the server certificates are in the /assets directory
 
@@ -42,5 +40,5 @@ if you don't have godoc yet on your machine, you can run:
     `cd bin `
     `./player-updater [path to input CSV]`
 
-This will start a server on your machine accessible at [127.0.0.1:9000].
+This will start a server on your machine accessible at [https://127.0.0.1:9001].
 It will then answer normally to the documented API Calls
