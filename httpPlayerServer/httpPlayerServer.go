@@ -171,7 +171,7 @@ func handleMacAddressUpdateRequest(res http.ResponseWriter, req *http.Request, p
 		res.Header().Set("Content-Type", "application/json")
 		res.WriteHeader(http.StatusOK)
 		bodyEncoder := json.NewEncoder(res)
-		// TODO use a map like in errorResponse to have fields in camelCase
+		// TODO: use a map like in errorResponse to have fields in camelCase
 		bodyEncoder.Encode(body)
 	} else {
 		log.Print(err)
@@ -244,6 +244,7 @@ func executeRequest(res http.ResponseWriter, macAddress string, pathToCSV string
 func (body *ExpectedAPIBody) validate() error {
 	LEVEL_IDENTIFIER := "profile"
 	// verify if this level is problematic
+	// TODO: this is not the way to see if Profiles is empty
 	if body == nil || &body.Profile == nil {
 		recursiveFailMsgCore := fmt.Sprintf(RECURSIVE_JSON_CONFLICT_MSG_CORE, LEVEL_IDENTIFIER)
 		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL_IDENTIFIER, recursiveFailMsgCore)
