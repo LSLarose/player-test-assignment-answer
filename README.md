@@ -1,5 +1,4 @@
 # Rationale
-*****
 This program was written in go, as I understood that the internship would use golang and I had never used it before: It would therefore be a great way to also learn the language on the fly
 
 Upon further investigation, it was found to offer the researched caracteristics out of the box, that is:
@@ -14,9 +13,6 @@ Assumptions:
  - This tool's final environment would be the cloud
 
 # How to "use" this tool
-*****
-//TODO
-
 ## To get developper documentation for this project:
 `godoc -http=:6060`
 
@@ -36,9 +32,9 @@ if you don't have godoc yet on your machine, you can run:
 - go to the project's root directory and build the executable
     `go build -o bin/player-updater`
 
-- execute the executable
-    `cd bin `
-    `./player-updater [path to input CSV]`
+- run the executable
+    `cd bin `,
+    `./player-updater [path to input CSV]` on Linux or `player-updater.exe [path to input CSV]` on Windows
 
-This will start a server on your machine accessible at [https://127.0.0.1:9001].
+This will start a server on your machine accessible at https://127.0.0.1:9001.
 It will then answer normally to the documented API Calls
