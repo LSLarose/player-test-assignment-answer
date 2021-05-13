@@ -1,4 +1,4 @@
-# rationale
+# Rationale
 *****
 This program was written in go, as I understood that the internship would use golang and I had never used it before: It would therefore be a great way to also learn the language on the fly
 

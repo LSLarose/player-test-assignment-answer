@@ -32,13 +32,11 @@ func main() {
 	pathToCSVFile := consoleLineArguments[1]
 
 	//check if file exists
-	CSVFile, err := os.Open(pathToCSVFile)
-	if err != nil {
-		log.Fatal(err.Error())
-	} else {
-		//file exists, close for now
-		CSVFile.Close()
-		//start the server
-		server.StartServer(pathToCSVFile)
+	_, err := os.Stat(pathToCSVFile)
+	if os.IsNotExist(err) {
+		log.Fatalf("Input file at does not exist at \"%s\".", pathToCSVFile)
 	}
+
+	//start the server
+	server.StartServer(pathToCSVFile)
 }
