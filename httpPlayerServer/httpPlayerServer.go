@@ -138,7 +138,7 @@ func handleMacAddressUpdateRequest(res http.ResponseWriter, req *http.Request, p
 	}
 
 	if err == nil {
-		err = authenticateRequests(res, clientId[0], authToken[0])
+		err = authenticateRequest(res, clientId[0], authToken[0])
 	}
 
 	if err == nil {
@@ -160,7 +160,7 @@ func handleMacAddressUpdateRequest(res http.ResponseWriter, req *http.Request, p
 // verifies if the authentication info is valid.
 // Since the info is bogus and there is no actual verification,
 // we'll just randomly throw an error now and then.
-func authenticateRequests(res http.ResponseWriter, clientId string, authToken string) error {
+func authenticateRequest(res http.ResponseWriter, clientId string, authToken string) error {
 	// assignment said that these values would be bogus, but they still need to be there
 	if len(clientId) == 0 || len(authToken) == 0 {
 		errorResponse(res, UNAUTHORIZED_ERROR_MSG, http.StatusUnauthorized)
