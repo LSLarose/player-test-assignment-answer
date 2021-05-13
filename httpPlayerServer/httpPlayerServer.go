@@ -23,11 +23,13 @@ const (
 	// expect to be run from inside bin
 	CERT_FILE_PATH = "../assets/localhost"
 	// TODO: not correct but will do, just matches all non-space characters. Would probably be unusable if there were longer API routes?
-	MAC_ADDR_PATTERN                  = "[\\S]+"
-	MAIN_API_ROUTE                    = "/profiles/clientId:{macaddress:" + MAC_ADDR_PATTERN + "}"
-	UNAUTHORIZED_ERROR_MSG            = "invalid clientId or token supplied"
-	INTERNAL_ERROR_MSG                = "An internal server error occurred"
-	CLIENT_NOT_FOUND_ERROR_MSG_FORMAT = "profile of client %s does not exist"
+	MAC_ADDR_PATTERN                   = "[\\S]+"
+	MAIN_API_ROUTE                     = "/profiles/clientId:{macaddress:" + MAC_ADDR_PATTERN + "}"
+	UNAUTHORIZED_ERROR_MSG             = "invalid clientId or token supplied"
+	INTERNAL_ERROR_MSG                 = "An internal server error occurred"
+	CLIENT_NOT_FOUND_ERROR_MSG_FORMAT  = "profile of client %s does not exist"
+	RECURSIVE_JSON_CONFLICT_MSG_FORMAT = "child \"%s\" fails because [%s]"
+	RECURSIVE_JSON_CONFLICT_MSG_CORE   = "\"%s\" is required"
 )
 
 //interfaces for JSON un/marshalling
@@ -126,15 +128,9 @@ func handleMacAddressUpdateRequest(res http.ResponseWriter, req *http.Request, p
 	// see http.Error on pkg.go.dev
 	var err error = nil
 
-	//extract mac address from URL
-	macAddress := mux.Vars(req)["macaddress"]
 	//extract auth fields from Header
 	clientId := req.Header.Values("x-client-id")
 	authToken := req.Header.Values("x-authentication-token")
-	//extract ExpectedAPIBody from Body
-	body := new(ExpectedAPIBody)
-	bodyDecoder := json.NewDecoder(req.Body)
-	err = bodyDecoder.Decode(body)
 
 	if err == nil && (len(clientId) == 0 || len(authToken) == 0) {
 		errorResponse(res, UNAUTHORIZED_ERROR_MSG, http.StatusUnauthorized)
@@ -144,6 +140,27 @@ func handleMacAddressUpdateRequest(res http.ResponseWriter, req *http.Request, p
 	if err == nil {
 		err = authenticateRequest(res, clientId[0], authToken[0])
 	}
+
+	//extract ExpectedAPIBody from Body
+	body := new(ExpectedAPIBody)
+	bodyDecoder := json.NewDecoder(req.Body)
+
+	if err == nil {
+		err = bodyDecoder.Decode(body)
+		if err != nil {
+			errorResponse(res, INTERNAL_ERROR_MSG, http.StatusInternalServerError)
+		}
+	}
+
+	if err == nil {
+		err = body.validate()
+		if err != nil {
+			errorResponse(res, err.Error(), http.StatusConflict)
+		}
+	}
+
+	//extract mac address from URL
+	macAddress := mux.Vars(req)["macaddress"]
 
 	if err == nil {
 		err = executeRequest(res, macAddress, pathToCSV)
@@ -221,6 +238,62 @@ func executeRequest(res http.ResponseWriter, macAddress string, pathToCSV string
 	// no error, flush write and close file
 	CSVFile.Sync()
 	CSVFile.Close()
+	return nil
+}
+
+func (body *ExpectedAPIBody) validate() error {
+	LEVEL_IDENTIFIER := "profile"
+	// verify if this level is problematic
+	if body == nil || &body.Profile == nil {
+		recursiveFailMsgCore := fmt.Sprintf(RECURSIVE_JSON_CONFLICT_MSG_CORE, LEVEL_IDENTIFIER)
+		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL_IDENTIFIER, recursiveFailMsgCore)
+	}
+
+	// verify if lower levels are problematic
+	err := body.Profile.validate()
+	if err != nil {
+		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL_IDENTIFIER, err.Error())
+	}
+
+	//no conflict
+	return nil
+}
+
+func (profiles *APIProfiles) validate() error {
+	LEVEL_IDENTIFIER := "applications"
+	// verify if this level is problematic
+	if profiles.Applications == nil || len(profiles.Applications) == 0 {
+		recursiveFailMsgCore := fmt.Sprintf(RECURSIVE_JSON_CONFLICT_MSG_CORE, LEVEL_IDENTIFIER)
+		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL_IDENTIFIER, recursiveFailMsgCore)
+	}
+
+	// verify if lower levels are problematic
+	for _, applicationInfo := range profiles.Applications {
+		err := applicationInfo.validate()
+		if err != nil {
+			return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL_IDENTIFIER, err.Error())
+		}
+	}
+
+	//no conflict
+	return nil
+}
+
+func (applicationInfo *ApplicationInfo) validate() error {
+	LEVEL1_IDENTIFIER := "applicationId"
+	LEVEL2_IDENTIFIER := "version"
+	// verify if this level is problematic
+	if applicationInfo.ApplicationId == "" {
+		recursiveFailMsgCore := fmt.Sprintf(RECURSIVE_JSON_CONFLICT_MSG_CORE, LEVEL1_IDENTIFIER)
+		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL1_IDENTIFIER, recursiveFailMsgCore)
+	}
+
+	if applicationInfo.Version == "" {
+		recursiveFailMsgCore := fmt.Sprintf(RECURSIVE_JSON_CONFLICT_MSG_CORE, LEVEL2_IDENTIFIER)
+		return fmt.Errorf(RECURSIVE_JSON_CONFLICT_MSG_FORMAT, LEVEL2_IDENTIFIER, recursiveFailMsgCore)
+	}
+
+	//no conflict
 	return nil
 }
 
