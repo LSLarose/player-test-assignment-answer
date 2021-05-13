@@ -30,6 +30,7 @@ const (
 	CLIENT_NOT_FOUND_ERROR_MSG_FORMAT = "profile of client %s does not exist"
 )
 
+//interfaces for JSON un/marshalling
 type ExpectedAPIBody struct {
 	Profile APIProfiles
 }
@@ -43,7 +44,7 @@ type ApplicationInfo struct {
 	Version       string
 }
 
-// This starts the HTTPS server at
+// This starts the HTTPS server at https://localhost:9001
 func StartServer(pathToCSV string) {
 	// Set properties of the predefined Logger, including
 	// the log entry prefix and a flag to disable printing
@@ -76,6 +77,9 @@ func StartServer(pathToCSV string) {
 	}
 }
 
+// builds the handlers for the various routes
+// the server is expected to respond to.
+// use of gorillaMux taken from https://www.golangprograms.com/how-to-use-wildcard-or-a-variable-in-our-url-for-complex-routing.html
 func buildHandlers(pathToCVS string) *http.ServeMux {
 	// create a new `ServeMux`
 	serveMux := http.NewServeMux()
@@ -221,7 +225,7 @@ func executeRequest(res http.ResponseWriter, macAddress string, pathToCSV string
 }
 
 // shamelessly taken from https://golangbyexample.com/json-request-body-golang-http/
-// sends error messages to the client in the expected format
+// sends error messages to the client in the expected JSON format
 func errorResponse(res http.ResponseWriter, message string, httpStatusCode int) {
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(httpStatusCode)
