@@ -38,3 +38,7 @@ if you don't have godoc yet on your machine, you can run:
 
 This will start a server on your machine accessible at https://127.0.0.1:9001.
 It will then answer normally to the documented API Calls
+
+# Disclaimer
+I make no claim of following the golang's best practices, nor do I expect any of my implementations to be bug-free and secure.
+I am no security expert, nor am I a golang expert: indeed, I've learnt most of the golang basics while doing this project
